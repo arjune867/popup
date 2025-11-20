@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Grup Viral Indonesia</title>
+    <meta name="description" content="Temukan dan bergabung dengan grup viral terbaru di Indonesia.">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Grup Viral">
+    
+    <!-- Manifest JSON (Data URI untuk Demo Single File) -->
+    <!-- Dalam produksi, simpan konten ini sebagai file 'manifest.json' -->
+    <link rel="manifest" href='data:application/manifest+json;base64,ewogICJuYW1lIjogIkdydXAgVmlyYWwgSW5kb25lc2lhIiwKICAic2hvcnRfbmFtZSI6ICJHcnVwVmlyYWwiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiNFNjAwMjMiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8xMjQvMTI0MDEwLnBuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ=='>
+
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#E60023', /* Pinterest Red */
+                        whatsapp: '#25D366',
+                        facebook: '#1877F2',
+                        twitter: '#000000',
+                    },
+                    screens: {
+                        'xs': '480px', /* Breakpoint tambahan untuk HP kecil */
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f9f9f9;
+            -webkit-tap-highlight-color: transparent; /* Hilangkan highlight biru di Android */
+        }
+        
+        /* Hide Scrollbar */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .card-hover {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+        
+        /* Hanya aktifkan hover effect di desktop */
+        @media (hover: hover) {
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            }
+            .card-hover:hover .img-container img {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Efek tekan untuk Mobile */
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+
+        .img-container {
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            position: relative;
+            background-color: #eee; /* Placeholder color */
+        }
+        
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        /* Install Button Animation */
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        
+        .install-btn-anim {
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
+</head>
+<body class="pb-20"> <!-- Padding bottom untuk ruang scroll di mobile -->
+
+    <!-- Header -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-40 transition-all duration-300" id="navbar">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary/10 p-2 rounded-full">
+                    <i class="bi bi-fire text-primary text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-900 tracking-tight leading-none">Grup Viral</h1>
+                    <p class="text-[10px] text-gray-500 font-medium">Update Harian</p>
+                </div>
+            </div>
+            
+            <!-- Status Online -->
+            <div class="flex items-center bg-green-50 px-3 py-1 rounded-full border border-green-100">
+                <span class="relative flex h-2 w-2 mr-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span class="text-xs font-bold text-green-700">1.2k</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tombol Install PWA (Hidden Default) -->
+    <div id="install-container" class="hidden fixed bottom-6 right-6 z-50 install-btn-anim">
+        <button id="install-button" class="bg-gray-900 text-white px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 hover:bg-gray-800 transition font-medium text-sm">
+            <i class="bi bi-download"></i> Install App
+        </button>
+    </div>
+
+    <!-- Konten Utama -->
+    <main class="max-w-6xl mx-auto px-4 py-6">
+        
+        <div class="mb-8 text-center md:text-left md:flex justify-between items-end">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Temukan Circle Barumu</h2>
+                <p class="text-gray-500 text-sm mt-1">Pilih kategori grup di bawah untuk bergabung.</p>
+            </div>
+            
+            <!-- Filter sederhana (Visual saja) -->
+            <div class="mt-4 md:mt-0 flex gap-2 overflow-x-auto hide-scroll pb-2">
+                <span class="px-4 py-1.5 bg-black text-white rounded-full text-xs font-medium whitespace-nowrap shadow-lg shadow-gray-200">Semua</span>
+                <span class="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-medium whitespace-nowrap">Viral</span>
+                <span class="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-medium whitespace-nowrap">Video</span>
+                <span class="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-medium whitespace-nowrap">Chat</span>
+            </div>
+        </div>
+
+        <!-- GRID SYSTEM RESPONSIVE -->
+        <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+
+            <!-- Card 1 -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100 flex flex-col h-full">
+                <div class="img-container relative">
+                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" loading="lazy" alt="Gadis Model">
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center">
+                        <i class="bi bi-whatsapp mr-1"></i> 250+
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-900 truncate">Cecan Viral Indo ✨</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2">Tempat ngumpul cecan hits se-Indonesia. Share foto OOTD dan keseharian.</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick="joinGroup('https://edukasidewasa.xyz')" class="w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-gray-200 text-sm">
+                            Gabung Grup
+                        </button>
+                        
+                        <div class="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+                            <button onclick="shareTo('wa')" class="text-gray-400 hover:text-whatsapp transition"><i class="bi bi-whatsapp text-lg"></i></button>
+                            <button onclick="shareTo('fb')" class="text-gray-400 hover:text-facebook transition"><i class="bi bi-facebook text-lg"></i></button>
+                            <button onclick="shareTo('x')" class="text-gray-400 hover:text-black transition"><i class="bi bi-twitter-x text-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100 flex flex-col h-full">
+                <div class="img-container relative">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" loading="lazy" alt="Wanita Tersenyum">
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center">
+                        <i class="bi bi-whatsapp mr-1"></i> 900+
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-900 truncate">Tante & Gadis Hits 💃</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2">Sharing tips kecantikan, fashion terkini, dan tempat nongkrong asik.</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick="joinGroup('https://edukasidewasa.xyz')" class="w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-gray-200 text-sm">
+                            Gabung Grup
+                        </button>
+                        <div class="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+                            <button onclick="shareTo('wa')" class="text-gray-400 hover:text-whatsapp transition"><i class="bi bi-whatsapp text-lg"></i></button>
+                            <button onclick="shareTo('fb')" class="text-gray-400 hover:text-facebook transition"><i class="bi bi-facebook text-lg"></i></button>
+                            <button onclick="shareTo('x')" class="text-gray-400 hover:text-black transition"><i class="bi bi-twitter-x text-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100 flex flex-col h-full">
+                <div class="img-container relative">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" loading="lazy" alt="Wanita Fashion">
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center">
+                        <i class="bi bi-whatsapp mr-1"></i> 120+
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-900 truncate">Mahasiswi Kota 🎓</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2">Forum diskusi mahasiswi, info kost, beasiswa, dan event kampus.</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick="joinGroup('https://edukasidewasa.xyz')" class="w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-gray-200 text-sm">
+                            Gabung Grup
+                        </button>
+                        <div class="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+                            <button onclick="shareTo('wa')" class="text-gray-400 hover:text-whatsapp transition"><i class="bi bi-whatsapp text-lg"></i></button>
+                            <button onclick="shareTo('fb')" class="text-gray-400 hover:text-facebook transition"><i class="bi bi-facebook text-lg"></i></button>
+                            <button onclick="shareTo('x')" class="text-gray-400 hover:text-black transition"><i class="bi bi-twitter-x text-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100 flex flex-col h-full">
+                <div class="img-container relative">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" loading="lazy" alt="Model">
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center">
+                        <i class="bi bi-whatsapp mr-1"></i> 80+
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-900 truncate">Komunitas Hijab 🧕</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2">Inspirasi fashion muslimah modern, tutorial hijab, dan kajian online.</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick="joinGroup('https://edukasidewasa.xyz')" class="w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-gray-200 text-sm">
+                            Gabung Grup
+                        </button>
+                        <div class="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+                            <button onclick="shareTo('wa')" class="text-gray-400 hover:text-whatsapp transition"><i class="bi bi-whatsapp text-lg"></i></button>
+                            <button onclick="shareTo('fb')" class="text-gray-400 hover:text-facebook transition"><i class="bi bi-facebook text-lg"></i></button>
+                            <button onclick="shareTo('x')" class="text-gray-400 hover:text-black transition"><i class="bi bi-twitter-x text-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100 flex flex-col h-full">
+                <div class="img-container relative">
+                    <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" loading="lazy" alt="Model">
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center">
+                        <i class="bi bi-whatsapp mr-1"></i> 300+
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-900 truncate">Gadis Desa Alami 🌿</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2">Pesona keindahan alam dan kearifan lokal gadis desa. Sejuk dan damai.</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick="joinGroup('https://edukasidewasa.xyz')" class="w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-gray-200 text-sm">
+                            Gabung Grup
+                        </button>
+                        <div class="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+                            <button onclick="shareTo('wa')" class="text-gray-400 hover:text-whatsapp transition"><i class="bi bi-whatsapp text-lg"></i></button>
+                            <button onclick="shareTo('fb')" class="text-gray-400 hover:text-facebook transition"><i class="bi bi-facebook text-lg"></i></button>
+                            <button onclick="shareTo('x')" class="text-gray-400 hover:text-black transition"><i class="bi bi-twitter-x text-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100 flex flex-col h-full">
+                <div class="img-container relative">
+                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" loading="lazy" alt="Model">
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center">
+                        <i class="bi bi-whatsapp mr-1"></i> 1k+
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-900 truncate">Fashion & OOTD 👗</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2">Referensi outfit kekinian, mix & match baju, dan tren fashion 2025.</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick="joinGroup('https://edukasidewasa.xyz')" class="w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-gray-200 text-sm">
+                            Gabung Grup
+                        </button>
+                        <div class="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+                            <button onclick="shareTo('wa')" class="text-gray-400 hover:text-whatsapp transition"><i class="bi bi-whatsapp text-lg"></i></button>
+                            <button onclick="shareTo('fb')" class="text-gray-400 hover:text-facebook transition"><i class="bi bi-facebook text-lg"></i></button>
+                            <button onclick="shareTo('x')" class="text-gray-400 hover:text-black transition"><i class="bi bi-twitter-x text-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 7 (Baru) -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100 flex flex-col h-full">
+                <div class="img-container relative">
+                    <!-- Gambar Gamers -->
+                    <img src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" loading="lazy" alt="Gamer">
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center">
+                        <i class="bi bi-whatsapp mr-1"></i> 500+
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-900 truncate">Gamers & Mabar 🎮</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2">Komunitas mabar Mobile Legends, PUBG, Free Fire dan info turnamen.</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick="joinGroup('https://edukasidewasa.xyz')" class="w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-gray-200 text-sm">
+                            Gabung Grup
+                        </button>
+                        <div class="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+                            <button onclick="shareTo('wa')" class="text-gray-400 hover:text-whatsapp transition"><i class="bi bi-whatsapp text-lg"></i></button>
+                            <button onclick="shareTo('fb')" class="text-gray-400 hover:text-facebook transition"><i class="bi bi-facebook text-lg"></i></button>
+                            <button onclick="shareTo('x')" class="text-gray-400 hover:text-black transition"><i class="bi bi-twitter-x text-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 8 (Baru) -->
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100 flex flex-col h-full">
+                <div class="img-container relative">
+                    <!-- Gambar Kuliner -->
+                    <img src="https://images.unsplash.com/photo-1516813607416-9848a7682a3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" loading="lazy" alt="Kuliner">
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md flex items-center">
+                        <i class="bi bi-whatsapp mr-1"></i> 15k+
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="font-bold text-gray-900 truncate">Kuliner & Diskon 🍜</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2">Info promo makanan, review cafe hits, dan resep masakan viral.</p>
+                    
+                    <div class="mt-auto">
+                        <button onclick="joinGroup('https://edukasidewasa.xyz')" class="w-full bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-gray-200 text-sm">
+                            Gabung Grup
+                        </button>
+                        <div class="flex justify-center gap-4 mt-4 pt-3 border-t border-gray-50">
+                            <button onclick="shareTo('wa')" class="text-gray-400 hover:text-whatsapp transition"><i class="bi bi-whatsapp text-lg"></i></button>
+                            <button onclick="shareTo('fb')" class="text-gray-400 hover:text-facebook transition"><i class="bi bi-facebook text-lg"></i></button>
+                            <button onclick="shareTo('x')" class="text-gray-400 hover:text-black transition"><i class="bi bi-twitter-x text-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    
+    <footer class="text-center py-8 text-gray-400 text-xs border-t border-gray-100 mt-8">
+        <p class="mb-2 font-medium">Grup Viral Indonesia</p>
+        <p>&copy; 2025 All rights reserved.</p>
+    </footer>
+
+    <script>
+        // --- LOGIC PWA INSTALLATION ---
+        let deferredPrompt;
+        const installContainer = document.getElementById('install-container');
+        const installButton = document.getElementById('install-button');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Mencegah Chrome di Android menampilkan prompt default mini
+            e.preventDefault();
+            // Simpan event untuk dipanggil nanti
+            deferredPrompt = e;
+            // Tampilkan tombol install custom kita
+            installContainer.classList.remove('hidden');
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Tampilkan prompt instalasi asli
+                deferredPrompt.prompt();
+                // Tunggu respon user
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response: ${outcome}`);
+                // Reset variable karena prompt hanya bisa dipakai sekali
+                deferredPrompt = null;
+                // Sembunyikan tombol
+                installContainer.classList.add('hidden');
+            }
+        });
+
+        // --- LOGIC JOIN & SHARE ---
+        function joinGroup(url) {
+            const btn = event.currentTarget;
+            const originalText = btn.innerText;
+            
+            // Feedback visual loading
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i> Memproses...';
+            btn.classList.add('opacity-75');
+            
+            setTimeout(() => {
+                window.location.href = url;
+                // Reset button state (jika user kembali)
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                    btn.classList.remove('opacity-75');
+                }, 1000);
+            }, 800);
+        }
+
+        function shareTo(platform) {
+            event.stopPropagation();
+            const currentUrl = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent("Ayo gabung grup viral ini! Banyak update terbaru 🔥");
+            let shareUrl = "";
+
+            if (platform === 'wa') {
+                shareUrl = `https://wa.me/?text=${text}%20${currentUrl}`;
+            } else if (platform === 'fb') {
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`;
+            } else if (platform === 'x') {
+                shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${currentUrl}`;
+            }
+
+            window.open(shareUrl, '_blank');
+        }
+
+        // --- SERVICE WORKER REGISTRATION (Untuk PWA Offline) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Kita mendaftarkan sw.js (file ini harus ada di root server Anda)
+                // Karena ini single file demo, kode di bawah hanya placeholder untuk struktur PWA
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
