@@ -149,6 +149,13 @@
             animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* Gallery Modal Content Specifics */
+        .gallery-content {
+            height: 80vh; /* Tinggi modal galeri */
+            display: flex;
+            flex-direction: column;
+        }
+
         /* Grid Menu Item Style */
         .menu-item {
             display: flex;
@@ -172,6 +179,53 @@
         
         .menu-item:active {
             transform: scale(0.98);
+        }
+
+        /* Gallery Card Style */
+        .gallery-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+
+        .gallery-thumb {
+            position: relative;
+            width: 100%;
+            padding-bottom: 177.77%; /* Aspect Ratio 9:16 */
+            background-color: #000;
+        }
+        
+        .gallery-thumb img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Style Khusus Profile Modal */
+        .profile-photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .profile-photo-item {
+            aspect-ratio: 1/1; /* Kotak */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .profile-photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .profile-photo-item:hover img {
+            transform: scale(1.1);
         }
 
         @keyframes fadeIn {
@@ -250,8 +304,8 @@
             </div>
         </div>
 
-        <!-- POPUP UTAMA (GRID PILIHAN) -->
-        <div class="custom-modal">
+        <!-- POPUP 1: MENU UTAMA -->
+        <div id="menu-modal" class="custom-modal">
             <div class="modal-content">
                 <!-- Header Popup -->
                 <div class="bg-gradient-to-r from-green-600 to-teal-600 p-6 text-center relative overflow-hidden">
@@ -278,7 +332,7 @@
                             <span class="text-[10px] text-gray-400 mt-1">Akses Chat</span>
                         </button>
 
-                        <!-- Pilihan 2: Video Viral -->
+                        <!-- Pilihan 2: Video Viral (MEMBUKA GALERI) -->
                         <button onclick="handleAction('video')" class="menu-item group">
                             <div class="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center mb-3 group-hover:bg-pink-200 transition">
                                 <i class="bi bi-play-circle-fill text-3xl text-pink-600"></i>
@@ -287,16 +341,18 @@
                             <span class="text-[10px] text-gray-400 mt-1">Galeri Full</span>
                         </button>
 
-                        <!-- Pilihan 3: Profile Admin -->
+                        <!-- Pilihan 3: Profile Admin (MEMBUKA PROFIL) -->
                         <button onclick="handleAction('profile')" class="menu-item group">
-                            <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-3 group-hover:bg-blue-200 transition">
-                                <i class="bi bi-person-lines-fill text-3xl text-blue-600"></i>
+                            <!-- Foto Admin -->
+                            <div class="w-14 h-14 rounded-full overflow-hidden mb-3 border-2 border-blue-100 group-hover:border-blue-300 transition shadow-sm">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXsPibCnwnzNYHUOGAJO10tplaf_YL-FrGNQ&s" 
+                                     class="w-full h-full object-cover" alt="Admin">
                             </div>
                             <span class="font-bold text-gray-700 text-sm text-center">Profile Admin</span>
                             <span class="text-[10px] text-gray-400 mt-1">Info Kontak</span>
                         </button>
 
-                         <!-- Pilihan 4: Bantuan (Pelengkap Grid) -->
+                         <!-- Pilihan 4: Bantuan -->
                          <button onclick="handleAction('help')" class="menu-item group">
                             <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-gray-200 transition">
                                 <i class="bi bi-info-circle-fill text-3xl text-gray-600"></i>
@@ -317,42 +373,195 @@
             </div>
         </div>
 
+        <!-- POPUP 2: GALERI VIDEO -->
+        <div id="gallery-modal" class="custom-modal hidden">
+            <div class="modal-content gallery-content">
+                <!-- Header Galeri -->
+                <div class="bg-white border-b p-3 flex items-center gap-3 shadow-sm z-10">
+                    <button onclick="closeGallery()" class="p-2 hover:bg-gray-100 rounded-full transition">
+                        <i class="bi bi-arrow-left text-xl text-gray-700"></i>
+                    </button>
+                    <div>
+                        <h2 class="font-bold text-gray-800 leading-none">Galeri Viral</h2>
+                        <span class="text-[10px] text-green-600">● Online sekarang</span>
+                    </div>
+                </div>
+
+                <!-- Body Galeri (Scrollable) -->
+                <div class="flex-1 overflow-y-auto bg-gray-50 p-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Item Galeri 1 -->
+                        <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
+                            <div class="gallery-thumb">
+                                <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video">
+                                <div class="absolute top-2 right-2 bg-black/40 rounded-full p-1">
+                                    <i class="bi bi-play-fill text-white text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="p-2">
+                                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Video Viral Terbaru</h4>
+                                <div class="flex justify-between text-[10px] text-gray-500">
+                                    <span class="text-pink-500"><i class="bi bi-heart-fill"></i> 1.2k</span>
+                                    <i class="bi bi-share-fill text-blue-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item Galeri 2 -->
+                        <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
+                            <div class="gallery-thumb">
+                                <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video">
+                            </div>
+                            <div class="p-2">
+                                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Video Lucu Ngakak</h4>
+                                <div class="flex justify-between text-[10px] text-gray-500">
+                                    <span class="text-pink-500"><i class="bi bi-heart-fill"></i> 856</span>
+                                    <i class="bi bi-share-fill text-blue-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item Galeri 3 -->
+                        <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
+                            <div class="gallery-thumb">
+                                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video">
+                            </div>
+                            <div class="p-2">
+                                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Momen Langka</h4>
+                                <div class="flex justify-between text-[10px] text-gray-500">
+                                    <span class="text-pink-500"><i class="bi bi-heart-fill"></i> 3.4k</span>
+                                    <i class="bi bi-share-fill text-blue-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item Galeri 4 -->
+                        <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
+                            <div class="gallery-thumb">
+                                <img src="https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video">
+                            </div>
+                            <div class="p-2">
+                                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Update Terbaru</h4>
+                                <div class="flex justify-between text-[10px] text-gray-500">
+                                    <span class="text-pink-500"><i class="bi bi-heart-fill"></i> 20k</span>
+                                    <i class="bi bi-share-fill text-blue-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POPUP 3: PROFIL ADMIN (BARU) -->
+        <div id="profile-modal" class="custom-modal hidden">
+            <div class="modal-content relative">
+                <!-- Tombol Close -->
+                <button onclick="closeProfile()" class="absolute top-3 right-3 z-20 bg-white/50 hover:bg-white p-1 rounded-full transition shadow-sm">
+                    <i class="bi bi-x text-2xl text-gray-600"></i>
+                </button>
+
+                <div class="p-6 pb-8 text-center">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6 tracking-tight">Admin Profile</h3>
+                    
+                    <!-- 3 Foto Galeri Kecil (Grid) -->
+                    <div class="profile-photo-grid">
+                        <div class="profile-photo-item">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 1">
+                        </div>
+                        <div class="profile-photo-item">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 2">
+                        </div>
+                        <div class="profile-photo-item">
+                            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 3">
+                        </div>
+                    </div>
+
+                    <!-- Nama & Verifikasi -->
+                    <div class="mt-4">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
+                            Bella Safira
+                            <!-- Ikon Centang Biru (Bootstrap) -->
+                            <i class="bi bi-patch-check-fill text-blue-500 text-xl" title="Verified Admin"></i>
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">Jakarta, Indonesia • Online</p>
+                    </div>
+
+                    <!-- Tombol Kontak (Opsional) -->
+                    <div class="mt-6">
+                        <button onclick="window.location.href='https://gdxzone69.blogspot.com/'" class="bg-waGreen hover:bg-waDark text-white w-full py-3 rounded-full font-bold shadow-md transition flex items-center justify-center gap-2">
+                            <i class="bi bi-chat-dots-fill"></i> Chat Admin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // Fungsi Handler Navigasi
+        // Link Konfigurasi
+        const URLS = {
+            join: 'group_directory.html', 
+            video: 'https://dtxzone69.blogspot.com/', 
+            profile: 'https://gdxzone69.blogspot.com/',
+            help: 'https://gdxzone69.blogspot.com/'
+        };
+        
+        // Fungsi Handler Navigasi Utama
         function handleAction(type) {
             const btn = event.currentTarget;
             
-            // Efek loading sederhana pada tombol (Visual Feedback)
+            // LOGIC MENU
+            if (type === 'video') {
+                // Buka Galeri Video
+                toggleModal('menu-modal', false);
+                toggleModal('gallery-modal', true);
+                return; 
+            } else if (type === 'profile') {
+                // Buka Profil Admin (BARU)
+                toggleModal('menu-modal', false);
+                toggleModal('profile-modal', true);
+                return;
+            }
+
+            // Efek loading sederhana pada tombol (untuk redirect link)
             btn.classList.add('opacity-50');
-            btn.style.pointerEvents = 'none'; // Mencegah klik ganda
+            btn.style.pointerEvents = 'none';
             
-            let destinationURL = '';
+            let destinationURL = URLS[type];
 
-            // Logika Penentuan Link Berdasarkan Tombol yang Diklik
-            if (type === 'join') {
-                destinationURL = 'group';
-            } 
-            else if (type === 'video') {
-                destinationURL = 'https://dtxzone69.blogspot.com/';
-            } 
-            else if (type === 'profile') {
-                destinationURL = 'https://gdxzone69.blogspot.com/';
-            }
-            else if (type === 'help') {
-                destinationURL = 'https://gdxzone69.blogspot.com/';
-            }
-
-            // Eksekusi Redirect dengan sedikit delay agar animasi terlihat
+            // Eksekusi Redirect
             if (destinationURL) {
                 setTimeout(() => {
                     window.location.href = destinationURL;
                 }, 500);
             }
         }
+
+        // Helper untuk Buka/Tutup Modal
+        function toggleModal(modalId, show) {
+            const el = document.getElementById(modalId);
+            if (show) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // Fungsi Tutup Galeri (Kembali ke Menu)
+        function closeGallery() {
+            toggleModal('gallery-modal', false);
+            toggleModal('menu-modal', true);
+        }
+
+        // Fungsi Tutup Profil (Kembali ke Menu)
+        function closeProfile() {
+            toggleModal('profile-modal', false);
+            toggleModal('menu-modal', true);
+        }
+
+        // Fungsi Klik Item Video
+        function openVideoLink() {
+            window.location.href = URLS.video;
+        }
     </script>
 </body>
-
 </html>
-
