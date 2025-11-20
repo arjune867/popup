@@ -25,6 +25,21 @@
                     },
                     fontFamily: {
                         sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    animation: {
+                        'gradient-x': 'gradient-x 3s ease infinite',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            },
+                        },
                     }
                 }
             }
@@ -54,6 +69,7 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            padding-top: 50px; /* PENTING: Memberi ruang agar header chat tidak tertutup iklan atas */
         }
 
         /* Efek Blur pada Chat saat Popup Muncul */
@@ -238,6 +254,7 @@
             border-radius: 12px;
             text-align: center;
             border: 1px solid #eee;
+            position: relative; /* Untuk absolute badge iklan */
         }
         .group-grid-item img {
             width: 48px;
@@ -259,6 +276,16 @@
             font-weight: bold;
         }
 
+        /* Animasi untuk Iklan Native */
+        .ad-shimmer {
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { border-color: #fed7aa; box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.4); }
+            70% { border-color: #f97316; box-shadow: 0 0 0 4px rgba(251, 146, 60, 0); }
+            100% { border-color: #fed7aa; box-shadow: 0 0 0 0 rgba(251, 146, 60, 0); }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -272,11 +299,29 @@
 </head>
 <body>
 
+    <!-- KODE ANCHOR IKLAN (HEADER ATAS) -->
+    <div id="anchor-ad-header" class="fixed top-0 left-0 right-0 z-[100] flex justify-center pointer-events-none">
+        <div class="pointer-events-auto w-full max-w-[480px] bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-md relative">
+            <button onclick="document.getElementById('anchor-ad-header').style.display='none'; document.querySelector('.app-container').style.paddingTop='0px';" 
+                    class="absolute -bottom-6 right-0 bg-white text-gray-500 text-[10px] px-2 py-1 rounded-bl-lg shadow-sm border-b border-l border-gray-200 hover:text-red-500 hover:bg-red-50 transition-colors z-50">
+                Tutup <i class="bi bi-x-lg ml-1"></i>
+            </button>
+            <div class="flex items-center justify-center h-[50px] w-full overflow-hidden bg-gray-100">
+                <div class="w-full h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-gradient-x flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute top-0 -left-full w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent transform skew-x-12 animate-[shimmer_2s_infinite]"></div>
+                    <div class="text-center text-white drop-shadow-md px-4">
+                        <span class="block text-xs font-bold animate-pulse">🔥 HOT PROMO HARI INI! 🔥</span>
+                        <span class="block text-[9px] opacity-90">Klik di sini untuk bonus spesial</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
         
         <!-- TAMPILAN BELAKANG: CHAT INTERFACE -->
         <div class="chat-interface flex flex-col h-full blurred" id="chat-bg">
-            <!-- Header -->
             <div class="chat-header">
                 <i class="bi bi-arrow-left text-2xl mr-2"></i>
                 <div class="relative w-10 h-10 mr-3">
@@ -294,29 +339,21 @@
                 </div>
             </div>
 
-            <!-- Chat Bubbles (Background) -->
             <div class="chat-body">
-                <!-- Bubble Tanggal -->
                 <div class="flex justify-center mb-2">
                     <span class="bg-white/80 text-gray-600 text-[11px] py-1 px-3 rounded-lg shadow-sm">Hari Ini</span>
                 </div>
-
-                <!-- Pesan Enkripsi -->
                 <div class="flex justify-center mb-4 px-4 text-center">
                     <div class="bg-[#FFF5C4] text-gray-600 text-[10px] py-2 px-3 rounded-lg shadow-sm flex items-center gap-2">
                         <i class="bi bi-lock-fill text-[10px]"></i>
-                        Pesan dan panggilan dienkripsi secara end-to-end. Tidak ada yang bisa membaca atau mendengarnya di luar chat ini.
+                        Pesan dan panggilan dienkripsi secara end-to-end.
                     </div>
                 </div>
-
-                <!-- Pesan 1 -->
                 <div class="message in">
                     <span class="text-xs font-bold text-[#e542a3] block mb-1">Admin Grup</span>
                     Halo selamat datang di grup komunitas! 👋
                     <div class="msg-time">19:01</div>
                 </div>
-
-                <!-- Pesan 2 -->
                 <div class="message in">
                     <span class="text-xs font-bold text-[#e542a3] block mb-1">Admin Grup</span>
                     Sebelum mengakses konten, silakan pilih menu akses di bawah ini ya. 👇
@@ -324,7 +361,6 @@
                 </div>
             </div>
 
-            <!-- Input Palsu -->
             <div class="chat-input-area">
                 <i class="bi bi-emoji-smile text-2xl text-gray-500"></i>
                 <i class="bi bi-plus text-3xl text-gray-500"></i>
@@ -338,23 +374,16 @@
         <!-- POPUP 1: MENU UTAMA -->
         <div id="menu-modal" class="custom-modal">
             <div class="modal-content">
-                <!-- Header Popup -->
                 <div class="bg-gradient-to-r from-green-600 to-teal-600 p-6 text-center relative overflow-hidden">
-                    <!-- Dekorasi Background -->
                     <div class="absolute top-0 left-0 w-full h-full opacity-10">
                         <i class="bi bi-whatsapp text-[100px] absolute -left-4 -top-4 transform rotate-12"></i>
                         <i class="bi bi-stars text-[80px] absolute -right-4 bottom-0"></i>
                     </div>
-                    
                     <h2 class="text-2xl font-bold text-white relative z-10">Akses Grup</h2>
                     <p class="text-green-100 text-xs mt-1 relative z-10">Silakan pilih menu untuk melanjutkan</p>
                 </div>
-
-                <!-- Body Popup (Grid 2 Kolom) -->
                 <div class="p-6">
                     <div class="grid grid-cols-2 gap-4">
-                        
-                        <!-- Pilihan 1: Gabung Grup (MEMBUKA POPUP DAFTAR GRUP) -->
                         <button onclick="handleAction('join')" class="menu-item group">
                             <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-3 group-hover:bg-green-200 transition">
                                 <i class="bi bi-people-fill text-3xl text-green-600"></i>
@@ -362,8 +391,6 @@
                             <span class="font-bold text-gray-700 text-sm text-center">Gabung Grup</span>
                             <span class="text-[10px] text-gray-400 mt-1">Akses Chat</span>
                         </button>
-
-                        <!-- Pilihan 2: Video Viral (MEMBUKA GALERI) -->
                         <button onclick="handleAction('video')" class="menu-item group">
                             <div class="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center mb-3 group-hover:bg-pink-200 transition">
                                 <i class="bi bi-play-circle-fill text-3xl text-pink-600"></i>
@@ -371,19 +398,13 @@
                             <span class="font-bold text-gray-700 text-sm text-center">Video Viral</span>
                             <span class="text-[10px] text-gray-400 mt-1">Galeri Full</span>
                         </button>
-
-                        <!-- Pilihan 3: Profile Admin (MEMBUKA PROFIL) -->
                         <button onclick="handleAction('profile')" class="menu-item group">
-                            <!-- Foto Admin -->
                             <div class="w-14 h-14 rounded-full overflow-hidden mb-3 border-2 border-blue-100 group-hover:border-blue-300 transition shadow-sm">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXsPibCnwnzNYHUOGAJO10tplaf_YL-FrGNQ&s" 
-                                     class="w-full h-full object-cover" alt="Admin">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXsPibCnwnzNYHUOGAJO10tplaf_YL-FrGNQ&s" class="w-full h-full object-cover" alt="Admin">
                             </div>
                             <span class="font-bold text-gray-700 text-sm text-center">Profile Admin</span>
                             <span class="text-[10px] text-gray-400 mt-1">Info Kontak</span>
                         </button>
-
-                         <!-- Pilihan 4: Bantuan -->
                          <button onclick="handleAction('help')" class="menu-item group">
                             <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-gray-200 transition">
                                 <i class="bi bi-info-circle-fill text-3xl text-gray-600"></i>
@@ -391,14 +412,9 @@
                             <span class="font-bold text-gray-700 text-sm text-center">Bantuan</span>
                             <span class="text-[10px] text-gray-400 mt-1">FAQ & Info</span>
                         </button>
-
                     </div>
-
-                    <!-- Footer Popup -->
                     <div class="mt-6 text-center border-t pt-4">
-                        <p class="text-[10px] text-gray-400">
-                            Dengan melanjutkan, Anda menyetujui aturan grup.
-                        </p>
+                        <p class="text-[10px] text-gray-400">Dengan melanjutkan, Anda menyetujui aturan grup.</p>
                     </div>
                 </div>
             </div>
@@ -407,70 +423,53 @@
         <!-- POPUP 2: GALERI VIDEO -->
         <div id="gallery-modal" class="custom-modal hidden">
             <div class="modal-content gallery-content">
-                <!-- Header Galeri -->
                 <div class="bg-white border-b p-3 flex items-center gap-3 shadow-sm z-10">
-                    <button onclick="closeGallery()" class="p-2 hover:bg-gray-100 rounded-full transition">
-                        <i class="bi bi-arrow-left text-xl text-gray-700"></i>
-                    </button>
-                    <div>
-                        <h2 class="font-bold text-gray-800 leading-none">Galeri Viral</h2>
-                        <span class="text-[10px] text-green-600">● Online sekarang</span>
-                    </div>
+                    <button onclick="closeGallery()" class="p-2 hover:bg-gray-100 rounded-full transition"><i class="bi bi-arrow-left text-xl text-gray-700"></i></button>
+                    <div><h2 class="font-bold text-gray-800 leading-none">Galeri Viral</h2><span class="text-[10px] text-green-600">● Online sekarang</span></div>
                 </div>
-
-                <!-- Body Galeri -->
-                <div class="flex-1 overflow-y-auto bg-gray-50 p-3">
+                <div class="flex-1 overflow-y-auto bg-gray-50 p-3 pb-20">
                     <div class="grid grid-cols-2 gap-3">
-                        <!-- Item Video 1-4 (Sama seperti sebelumnya) -->
+                        
+                        <!-- Video 1 -->
                         <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
-                            <div class="gallery-thumb">
-                                <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video">
-                                <div class="absolute top-2 right-2 bg-black/40 rounded-full p-1"><i class="bi bi-play-fill text-white text-xs"></i></div>
+                            <div class="gallery-thumb"><img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video"><div class="absolute top-2 right-2 bg-black/40 rounded-full p-1"><i class="bi bi-play-fill text-white text-xs"></i></div></div>
+                            <div class="p-2"><h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Video Viral Terbaru</h4><div class="flex justify-between text-[10px] text-gray-500"><span class="text-pink-500"><i class="bi bi-heart-fill"></i> 1.2k</span><i class="bi bi-share-fill text-blue-500"></i></div></div>
+                        </div>
+                        
+                        <!-- Video 2 -->
+                        <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
+                            <div class="gallery-thumb"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video"></div>
+                            <div class="p-2"><h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Video Lucu Ngakak</h4><div class="flex justify-between text-[10px] text-gray-500"><span class="text-pink-500"><i class="bi bi-heart-fill"></i> 856</span><i class="bi bi-share-fill text-blue-500"></i></div></div>
+                        </div>
+
+                        <!-- >>> IKLAN NATIVE VIDEO (Posisi ke-3 di Grid) <<< -->
+                        <div class="gallery-card bg-pink-50 border-pink-200 relative overflow-hidden group cursor-pointer ad-shimmer">
+                            <span class="absolute top-1 right-1 bg-gray-200 text-gray-600 text-[6px] font-bold px-1 rounded border border-gray-300 z-10">IKLAN</span>
+                            <div class="gallery-thumb bg-gray-200">
+                                <!-- Placeholder Iklan -->
+                                <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2g4bm14a2V5N2V2cW0xb2t3eGk1eDk1eDk1eDk1eDk1eDk1eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6gbbuLW76jkt8vIc/giphy.gif" 
+                                     class="opacity-80 object-cover w-full h-full hover:opacity-100 transition" alt="Iklan Video">
                             </div>
                             <div class="p-2">
-                                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Video Viral Terbaru</h4>
-                                <div class="flex justify-between text-[10px] text-gray-500">
-                                    <span class="text-pink-500"><i class="bi bi-heart-fill"></i> 1.2k</span>
-                                    <i class="bi bi-share-fill text-blue-500"></i>
+                                <h4 class="text-xs font-bold text-pink-600 line-clamp-2 mb-1">🔥 Rekomendasi Spesial!</h4>
+                                <div class="flex justify-between items-center text-[10px] text-gray-500">
+                                    <span class="text-gray-400 text-[8px]">Disponsori</span>
+                                    <button onclick="window.open('LINK_IKLAN_DISINI')" class="bg-pink-500 text-white px-2 py-0.5 rounded text-[8px] font-bold animate-pulse">BUKA</button>
                                 </div>
                             </div>
                         </div>
-                        <!-- Copy Item lain... -->
+                        <!-- >>> END IKLAN <<< -->
+
+                        <!-- Video 3 -->
                         <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
-                            <div class="gallery-thumb">
-                                <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video">
-                            </div>
-                            <div class="p-2">
-                                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Video Lucu Ngakak</h4>
-                                <div class="flex justify-between text-[10px] text-gray-500">
-                                    <span class="text-pink-500"><i class="bi bi-heart-fill"></i> 856</span>
-                                    <i class="bi bi-share-fill text-blue-500"></i>
-                                </div>
-                            </div>
+                            <div class="gallery-thumb"><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video"></div>
+                            <div class="p-2"><h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Momen Langka</h4><div class="flex justify-between text-[10px] text-gray-500"><span class="text-pink-500"><i class="bi bi-heart-fill"></i> 3.4k</span><i class="bi bi-share-fill text-blue-500"></i></div></div>
                         </div>
+                        
+                        <!-- Video 4 -->
                         <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
-                            <div class="gallery-thumb">
-                                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video">
-                            </div>
-                            <div class="p-2">
-                                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Momen Langka</h4>
-                                <div class="flex justify-between text-[10px] text-gray-500">
-                                    <span class="text-pink-500"><i class="bi bi-heart-fill"></i> 3.4k</span>
-                                    <i class="bi bi-share-fill text-blue-500"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div onclick="openVideoLink()" class="gallery-card group cursor-pointer">
-                            <div class="gallery-thumb">
-                                <img src="https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video">
-                            </div>
-                            <div class="p-2">
-                                <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Update Terbaru</h4>
-                                <div class="flex justify-between text-[10px] text-gray-500">
-                                    <span class="text-pink-500"><i class="bi bi-heart-fill"></i> 20k</span>
-                                    <i class="bi bi-share-fill text-blue-500"></i>
-                                </div>
-                            </div>
+                            <div class="gallery-thumb"><img src="https://images.unsplash.com/photo-1500964757637-c85e8a162699?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Video"></div>
+                            <div class="p-2"><h4 class="text-xs font-semibold text-gray-800 line-clamp-2 mb-2">Update Terbaru</h4><div class="flex justify-between text-[10px] text-gray-500"><span class="text-pink-500"><i class="bi bi-heart-fill"></i> 20k</span><i class="bi bi-share-fill text-blue-500"></i></div></div>
                         </div>
                     </div>
                 </div>
@@ -480,134 +479,82 @@
         <!-- POPUP 3: PROFIL ADMIN -->
         <div id="profile-modal" class="custom-modal hidden">
             <div class="modal-content relative">
-                <button onclick="closeProfile()" class="absolute top-3 right-3 z-20 bg-white/50 hover:bg-white p-1 rounded-full transition shadow-sm">
-                    <i class="bi bi-x text-2xl text-gray-600"></i>
-                </button>
-
+                <button onclick="closeProfile()" class="absolute top-3 right-3 z-20 bg-white/50 hover:bg-white p-1 rounded-full transition shadow-sm"><i class="bi bi-x text-2xl text-gray-600"></i></button>
                 <div class="p-6 pb-8 text-center">
                     <h3 class="text-lg font-bold text-gray-800 mb-6 tracking-tight">Admin Profile</h3>
                     <div class="profile-photo-grid">
-                        <div class="profile-photo-item">
-                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 1">
-                        </div>
-                        <div class="profile-photo-item">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 2">
-                        </div>
-                        <div class="profile-photo-item">
-                            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 3">
-                        </div>
+                        <div class="profile-photo-item"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 1"></div>
+                        <div class="profile-photo-item"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 2"></div>
+                        <div class="profile-photo-item"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Foto 3"></div>
                     </div>
-                    <div class="mt-4">
-                        <h2 class="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
-                            Bella Safira
-                            <i class="bi bi-patch-check-fill text-blue-500 text-xl" title="Verified Admin"></i>
-                        </h2>
-                        <p class="text-sm text-gray-500 mt-1">Jakarta, Indonesia • Online</p>
-                    </div>
-                    <div class="mt-6">
-                        <button onclick="window.location.href='https://gdxzone69.blogspot.com/'" class="bg-waGreen hover:bg-waDark text-white w-full py-3 rounded-full font-bold shadow-md transition flex items-center justify-center gap-2">
-                            <i class="bi bi-chat-dots-fill"></i> Chat Admin
+                    <div class="mt-4"><h2 class="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">Bella Safira <i class="bi bi-patch-check-fill text-blue-500 text-xl" title="Verified Admin"></i></h2><p class="text-sm text-gray-500 mt-1">Jakarta, Indonesia • Online</p></div>
+                    
+                    <div class="mt-6"><button onclick="window.location.href='https://gdxzone69.blogspot.com/'" class="bg-waGreen hover:bg-waDark text-white w-full py-3 rounded-full font-bold shadow-md transition flex items-center justify-center gap-2"><i class="bi bi-chat-dots-fill"></i> Chat Admin</button></div>
+
+                    <!-- >>> IKLAN BANNER PROFIL ADMIN <<< -->
+                    <div class="mt-6 w-full bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center gap-3 shadow-sm relative overflow-hidden ad-shimmer">
+                        <span class="absolute top-0 right-0 bg-gray-200 text-gray-500 text-[8px] px-1.5 font-bold">IKLAN</span>
+                        <!-- Ikon Iklan -->
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex-shrink-0 overflow-hidden">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1041/1041916.png" class="w-full h-full object-cover" alt="Ad Icon">
+                        </div>
+                        <div class="text-left flex-1 min-w-0">
+                            <h4 class="text-xs font-bold text-gray-800 truncate">Cari Teman Kencan?</h4>
+                            <p class="text-[10px] text-gray-500 truncate">Aplikasi dating no.1 di Indonesia!</p>
+                        </div>
+                        <button onclick="window.open('LINK_IKLAN_DISINI')" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow transition">
+                            Install
                         </button>
                     </div>
+                    <!-- >>> END IKLAN <<< -->
                 </div>
             </div>
         </div>
 
-        <!-- POPUP 4: DAFTAR GRUP (BARU) -->
+        <!-- POPUP 4: DAFTAR GRUP -->
         <div id="join-group-modal" class="custom-modal hidden">
             <div class="modal-content gallery-content">
-                <!-- Header Modal Grup -->
                 <div class="bg-white border-b p-3 flex items-center gap-3 shadow-sm z-10">
-                    <button onclick="closeJoinGroup()" class="p-2 hover:bg-gray-100 rounded-full transition">
-                        <i class="bi bi-arrow-left text-xl text-gray-700"></i>
-                    </button>
-                    <div>
-                        <h2 class="font-bold text-gray-800 leading-none">Pilih Grup</h2>
-                        <span class="text-[10px] text-green-600">9 Grup Tersedia</span>
-                    </div>
+                    <button onclick="closeJoinGroup()" class="p-2 hover:bg-gray-100 rounded-full transition"><i class="bi bi-arrow-left text-xl text-gray-700"></i></button>
+                    <div><h2 class="font-bold text-gray-800 leading-none">Pilih Grup</h2><span class="text-[10px] text-green-600">9 Grup Tersedia</span></div>
                 </div>
-
-                <!-- Body Grid 3 Kolom x 3 Baris -->
-                <div class="flex-1 overflow-y-auto bg-white p-3">
+                <div class="flex-1 overflow-y-auto bg-white p-3 pb-20">
                     <div class="grid grid-cols-3 gap-3">
-                        
-                        <!-- Item 1 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 1">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Hijabers Indo</h4>
-                            <p class="text-[8px] text-gray-500">12k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
+                        <!-- Items 1-4 -->
+                        <div class="group-grid-item"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 1"><h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Hijabers Indo</h4><p class="text-[8px] text-gray-500">12k Anggota</p><button onclick="confirmJoin()" class="group-btn">GABUNG</button></div>
+                        <div class="group-grid-item"><img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 2"><h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Gadis Kota</h4><p class="text-[8px] text-gray-500">8.5k Anggota</p><button onclick="confirmJoin()" class="group-btn">GABUNG</button></div>
+                        <div class="group-grid-item"><img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 3"><h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Cewe Viral</h4><p class="text-[8px] text-gray-500">25k Anggota</p><button onclick="confirmJoin()" class="group-btn">GABUNG</button></div>
+                        <div class="group-grid-item"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 4"><h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Tante Hits</h4><p class="text-[8px] text-gray-500">5k Anggota</p><button onclick="confirmJoin()" class="group-btn">GABUNG</button></div>
+
+                        <!-- SLOT IKLAN NATIVE (SAMA SEPERTI SEBELUMNYA) -->
+                        <div class="group-grid-item bg-orange-50 border-orange-100 overflow-hidden ad-shimmer relative">
+                            <span class="absolute top-1 right-1 bg-gray-200 text-gray-600 text-[6px] font-bold px-1 rounded border border-gray-300 z-10">AD</span>
+                            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzY5bHhuY3c0b2d5b2d5a3Z6eXF6eXF6eXF6eXF6eXF6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7abKhOpu0NwenH3O/giphy.gif" alt="Promo" class="border-orange-200 opacity-90 hover:opacity-100 transition">
+                            <h4 class="text-[10px] font-bold text-orange-600 leading-tight mb-1">🔥 Slot Iklan</h4>
+                            <p class="text-[8px] text-gray-500">Klik untuk Info</p>
+                            <button onclick="window.open('LINK_IKLAN_DISINI')" class="group-btn bg-orange-500 hover:bg-orange-600 animate-pulse">BUKA</button>
                         </div>
 
-                        <!-- Item 2 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 2">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Gadis Kota</h4>
-                            <p class="text-[8px] text-gray-500">8.5k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
-                        </div>
-
-                        <!-- Item 3 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 3">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Cewe Viral</h4>
-                            <p class="text-[8px] text-gray-500">25k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
-                        </div>
-
-                        <!-- Item 4 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 4">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Tante Hits</h4>
-                            <p class="text-[8px] text-gray-500">5k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
-                        </div>
-
-                        <!-- Item 5 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1485893086445-ed75865eb748?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 5">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Mahasiswi</h4>
-                            <p class="text-[8px] text-gray-500">10k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
-                        </div>
-
-                        <!-- Item 6 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 6">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Cari Jodoh</h4>
-                            <p class="text-[8px] text-gray-500">45k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
-                        </div>
-
-                        <!-- Item 7 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 7">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Selebgram</h4>
-                            <p class="text-[8px] text-gray-500">18k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
-                        </div>
-
-                        <!-- Item 8 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1531123414780-f74242c2b052?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 8">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">VCS Aman</h4>
-                            <p class="text-[8px] text-gray-500">3k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
-                        </div>
-
-                        <!-- Item 9 -->
-                        <div class="group-grid-item">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 9">
-                            <h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Janda Muda</h4>
-                            <p class="text-[8px] text-gray-500">9k Anggota</p>
-                            <button onclick="confirmJoin()" class="group-btn">GABUNG</button>
-                        </div>
-
+                        <!-- Items 5-9 -->
+                        <div class="group-grid-item"><img src="https://images.unsplash.com/photo-1485893086445-ed75865eb748?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 5"><h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Mahasiswi</h4><p class="text-[8px] text-gray-500">10k Anggota</p><button onclick="confirmJoin()" class="group-btn">GABUNG</button></div>
+                        <div class="group-grid-item"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 6"><h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Cari Jodoh</h4><p class="text-[8px] text-gray-500">45k Anggota</p><button onclick="confirmJoin()" class="group-btn">GABUNG</button></div>
+                        <div class="group-grid-item"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 7"><h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">Selebgram</h4><p class="text-[8px] text-gray-500">18k Anggota</p><button onclick="confirmJoin()" class="group-btn">GABUNG</button></div>
+                        <div class="group-grid-item"><img src="https://images.unsplash.com/photo-1531123414780-f74242c2b052?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Grup 8"><h4 class="text-[10px] font-bold text-gray-800 leading-tight mb-1">VCS Aman</h4><p class="text-[8px] text-gray-500">3k Anggota</p><button onclick="confirmJoin()" class="group-btn">GABUNG</button></div>
                     </div>
                 </div>
             </div>
         </div>
 
+    </div>
+
+    <!-- KODE ANCHOR IKLAN (FOOTER BAWAH) -->
+    <div id="anchor-ad-footer" class="fixed bottom-0 left-0 right-0 z-[100] flex justify-center pointer-events-none">
+        <div class="pointer-events-auto w-full max-w-[480px] bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-[0_-5px_15px_rgba(0,0,0,0.1)] relative">
+            <button onclick="document.getElementById('anchor-ad-footer').style.display='none'" class="absolute -top-6 right-0 bg-white text-gray-500 text-[10px] px-2 py-1 rounded-tl-lg shadow-sm border-t border-l border-gray-200 hover:text-red-500 hover:bg-red-50 transition-colors">Tutup Iklan <i class="bi bi-x-lg ml-1"></i></button>
+            <div class="flex items-center justify-center h-[60px] w-full overflow-hidden">
+                <div class="flex flex-col items-center justify-center w-full h-full bg-gray-50 animate-pulse"><span class="text-xs font-bold text-gray-400">Space Iklan Banner Bawah</span><span class="text-[10px] text-gray-300">320x50 / 300x50 (Sticky)</span></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -616,79 +563,25 @@
             video: 'https://dtxzone69.blogspot.com/', 
             profile: 'https://gdxzone69.blogspot.com/',
             help: 'https://gdxzone69.blogspot.com/',
-            finalJoin: 'https://edukasidewasa.xyz' // Link tujuan akhir saat klik Gabung di grid
+            finalJoin: 'https://edukasidewasa.xyz' 
         };
         
-        // Fungsi Handler Navigasi Utama
         function handleAction(type) {
             const btn = event.currentTarget;
-            
-            // LOGIC MENU
-            if (type === 'video') {
-                // Buka Galeri Video
-                toggleModal('menu-modal', false);
-                toggleModal('gallery-modal', true);
-                return; 
-            } else if (type === 'profile') {
-                // Buka Profil Admin
-                toggleModal('menu-modal', false);
-                toggleModal('profile-modal', true);
-                return;
-            } else if (type === 'join') {
-                // Buka Daftar Grup (BARU)
-                toggleModal('menu-modal', false);
-                toggleModal('join-group-modal', true);
-                return;
-            }
+            if (type === 'video') { toggleModal('menu-modal', false); toggleModal('gallery-modal', true); return; } 
+            else if (type === 'profile') { toggleModal('menu-modal', false); toggleModal('profile-modal', true); return; } 
+            else if (type === 'join') { toggleModal('menu-modal', false); toggleModal('join-group-modal', true); return; }
 
-            // Fallback untuk menu lain (misal Help)
-            btn.classList.add('opacity-50');
-            btn.style.pointerEvents = 'none';
-            
-            if (URLS[type]) {
-                setTimeout(() => {
-                    window.location.href = URLS[type];
-                }, 500);
-            }
+            btn.classList.add('opacity-50'); btn.style.pointerEvents = 'none';
+            if (URLS[type]) { setTimeout(() => { window.location.href = URLS[type]; }, 500); }
         }
 
-        // Helper untuk Buka/Tutup Modal
-        function toggleModal(modalId, show) {
-            const el = document.getElementById(modalId);
-            if (show) {
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
-        }
-
-        // Fungsi Tutup Galeri
-        function closeGallery() {
-            toggleModal('gallery-modal', false);
-            toggleModal('menu-modal', true);
-        }
-
-        // Fungsi Tutup Profil
-        function closeProfile() {
-            toggleModal('profile-modal', false);
-            toggleModal('menu-modal', true);
-        }
-
-        // Fungsi Tutup Daftar Grup
-        function closeJoinGroup() {
-            toggleModal('join-group-modal', false);
-            toggleModal('menu-modal', true);
-        }
-
-        // Fungsi Klik Item Video
-        function openVideoLink() {
-            window.location.href = URLS.video;
-        }
-
-        // Fungsi Klik Gabung di dalam Grid
-        function confirmJoin() {
-            window.location.href = URLS.finalJoin;
-        }
+        function toggleModal(modalId, show) { const el = document.getElementById(modalId); if (show) { el.classList.remove('hidden'); } else { el.classList.add('hidden'); } }
+        function closeGallery() { toggleModal('gallery-modal', false); toggleModal('menu-modal', true); }
+        function closeProfile() { toggleModal('profile-modal', false); toggleModal('menu-modal', true); }
+        function closeJoinGroup() { toggleModal('join-group-modal', false); toggleModal('menu-modal', true); }
+        function openVideoLink() { window.location.href = URLS.video; }
+        function confirmJoin() { window.location.href = URLS.finalJoin; }
     </script>
 </body>
 </html>
