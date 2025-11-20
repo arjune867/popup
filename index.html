@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Chat Viral</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Konfigurasi Tailwind Custom -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        waGreen: '#008069',
+                        waDark: '#075E54',
+                        waBubbleOut: '#E7FFDB',
+                        waBubbleIn: '#FFFFFF',
+                        waBg: '#EFEAE2',
+                    },
+                    fontFamily: {
+                        sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #111b21; /* Latar belakang desktop gelap */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Kontainer Mobile App */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            background-color: #EFEAE2;
+            background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
+            background-blend-mode: overlay;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Efek Blur pada Chat saat Popup Muncul */
+        .chat-interface.blurred {
+            filter: blur(4px);
+            pointer-events: none;
+        }
+
+        /* Header Chat */
+        .chat-header {
+            background-color: #008069;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        /* Area Chat */
+        .chat-body {
+            flex: 1;
+            padding: 20px 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Bubble Chat */
+        .message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.4;
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        }
+
+        .message.in {
+            align-self: flex-start;
+            background-color: #FFFFFF;
+            border-top-left-radius: 0;
+        }
+
+        .message.out {
+            align-self: flex-end;
+            background-color: #E7FFDB;
+            border-top-right-radius: 0;
+        }
+
+        .msg-time {
+            font-size: 10px;
+            color: #999;
+            float: right;
+            margin-top: 4px;
+            margin-left: 8px;
+        }
+
+        /* Input Bar Palsu */
+        .chat-input-area {
+            background-color: #F0F2F5;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Modal Popup Kustom */
+        .custom-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center; /* Center Vertikal */
+            justify-content: center; /* Center Horizontal */
+            z-index: 50;
+            animation: fadeIn 0.3s ease-out;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 360px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Grid Menu Item Style */
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            border-radius: 16px;
+            transition: all 0.2s;
+            border: 1px solid #f3f4f6;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background-color: #f9fafb;
+            transform: scale(1.02);
+            border-color: #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- TAMPILAN BELAKANG: CHAT INTERFACE -->
+        <div class="chat-interface flex flex-col h-full blurred" id="chat-bg">
+            <!-- Header -->
+            <div class="chat-header">
+                <i class="bi bi-arrow-left text-2xl mr-2"></i>
+                <div class="relative w-10 h-10 mr-3">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXsPibCnwnzNYHUOGAJO10tplaf_YL-FrGNQ&s" 
+                         class="w-full h-full rounded-full object-cover border border-white/30">
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-base truncate leading-tight">Komunitas Viral 🔥</h3>
+                    <p class="text-xs text-white/80 truncate">Alice, Budi, +62 812...</p>
+                </div>
+                <div class="flex gap-4">
+                    <i class="bi bi-camera-video-fill text-xl"></i>
+                    <i class="bi bi-telephone-fill text-xl"></i>
+                    <i class="bi bi-three-dots-vertical text-xl"></i>
+                </div>
+            </div>
+
+            <!-- Chat Bubbles (Background) -->
+            <div class="chat-body">
+                <!-- Bubble Tanggal -->
+                <div class="flex justify-center mb-2">
+                    <span class="bg-white/80 text-gray-600 text-[11px] py-1 px-3 rounded-lg shadow-sm">Hari Ini</span>
+                </div>
+
+                <!-- Pesan Enkripsi -->
+                <div class="flex justify-center mb-4 px-4 text-center">
+                    <div class="bg-[#FFF5C4] text-gray-600 text-[10px] py-2 px-3 rounded-lg shadow-sm flex items-center gap-2">
+                        <i class="bi bi-lock-fill text-[10px]"></i>
+                        Pesan dan panggilan dienkripsi secara end-to-end. Tidak ada yang bisa membaca atau mendengarnya di luar chat ini.
+                    </div>
+                </div>
+
+                <!-- Pesan 1 -->
+                <div class="message in">
+                    <span class="text-xs font-bold text-[#e542a3] block mb-1">Admin Grup</span>
+                    Halo selamat datang di grup komunitas! 👋
+                    <div class="msg-time">19:01</div>
+                </div>
+
+                <!-- Pesan 2 -->
+                <div class="message in">
+                    <span class="text-xs font-bold text-[#e542a3] block mb-1">Admin Grup</span>
+                    Sebelum mengakses konten, silakan pilih menu akses di bawah ini ya. 👇
+                    <div class="msg-time">19:02</div>
+                </div>
+            </div>
+
+            <!-- Input Palsu -->
+            <div class="chat-input-area">
+                <i class="bi bi-emoji-smile text-2xl text-gray-500"></i>
+                <i class="bi bi-plus text-3xl text-gray-500"></i>
+                <div class="flex-1 bg-white rounded-full h-10 px-4 flex items-center text-gray-400 text-sm">
+                    Ketik pesan...
+                </div>
+                <i class="bi bi-mic-fill text-2xl text-white bg-waGreen p-2 rounded-full h-10 w-10 flex items-center justify-center shadow"></i>
+            </div>
+        </div>
+
+        <!-- POPUP UTAMA (GRID PILIHAN) -->
+        <div class="custom-modal">
+            <div class="modal-content">
+                <!-- Header Popup -->
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 p-6 text-center relative overflow-hidden">
+                    <!-- Dekorasi Background -->
+                    <div class="absolute top-0 left-0 w-full h-full opacity-10">
+                        <i class="bi bi-whatsapp text-[100px] absolute -left-4 -top-4 transform rotate-12"></i>
+                        <i class="bi bi-stars text-[80px] absolute -right-4 bottom-0"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-white relative z-10">Akses Grup</h2>
+                    <p class="text-green-100 text-xs mt-1 relative z-10">Silakan pilih menu untuk melanjutkan</p>
+                </div>
+
+                <!-- Body Popup (Grid 2 Kolom) -->
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        
+                        <!-- Pilihan 1: Gabung Grup -->
+                        <button onclick="handleAction('join')" class="menu-item group">
+                            <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-3 group-hover:bg-green-200 transition">
+                                <i class="bi bi-people-fill text-3xl text-green-600"></i>
+                            </div>
+                            <span class="font-bold text-gray-700 text-sm text-center">Gabung Grup</span>
+                            <span class="text-[10px] text-gray-400 mt-1">Akses Chat</span>
+                        </button>
+
+                        <!-- Pilihan 2: Video Viral -->
+                        <button onclick="handleAction('video')" class="menu-item group">
+                            <div class="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center mb-3 group-hover:bg-pink-200 transition">
+                                <i class="bi bi-play-circle-fill text-3xl text-pink-600"></i>
+                            </div>
+                            <span class="font-bold text-gray-700 text-sm text-center">Video Viral</span>
+                            <span class="text-[10px] text-gray-400 mt-1">Galeri Full</span>
+                        </button>
+
+                        <!-- Pilihan 3: Profile Admin -->
+                        <button onclick="handleAction('profile')" class="menu-item group">
+                            <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-3 group-hover:bg-blue-200 transition">
+                                <i class="bi bi-person-lines-fill text-3xl text-blue-600"></i>
+                            </div>
+                            <span class="font-bold text-gray-700 text-sm text-center">Profile Admin</span>
+                            <span class="text-[10px] text-gray-400 mt-1">Info Kontak</span>
+                        </button>
+
+                         <!-- Pilihan 4: Bantuan (Pelengkap Grid) -->
+                         <button onclick="handleAction('help')" class="menu-item group">
+                            <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-gray-200 transition">
+                                <i class="bi bi-info-circle-fill text-3xl text-gray-600"></i>
+                            </div>
+                            <span class="font-bold text-gray-700 text-sm text-center">Bantuan</span>
+                            <span class="text-[10px] text-gray-400 mt-1">FAQ & Info</span>
+                        </button>
+
+                    </div>
+
+                    <!-- Footer Popup -->
+                    <div class="mt-6 text-center border-t pt-4">
+                        <p class="text-[10px] text-gray-400">
+                            Dengan melanjutkan, Anda menyetujui aturan grup.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Fungsi Handler Navigasi
+        function handleAction(type) {
+            const btn = event.currentTarget;
+            
+            // Efek loading sederhana pada tombol (Visual Feedback)
+            btn.classList.add('opacity-50');
+            btn.style.pointerEvents = 'none'; // Mencegah klik ganda
+            
+            let destinationURL = '';
+
+            // Logika Penentuan Link Berdasarkan Tombol yang Diklik
+            if (type === 'join') {
+                destinationURL = 'https://edukasidewasa.xyz';
+            } 
+            else if (type === 'video') {
+                destinationURL = 'https://dtxzone69.blogspot.com/';
+            } 
+            else if (type === 'profile') {
+                destinationURL = 'https://gdxzone69.blogspot.com/';
+            }
+            else if (type === 'help') {
+                destinationURL = 'https://gdxzone69.blogspot.com/';
+            }
+
+            // Eksekusi Redirect dengan sedikit delay agar animasi terlihat
+            if (destinationURL) {
+                setTimeout(() => {
+                    window.location.href = destinationURL;
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>
